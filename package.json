@@ -1,0 +1,8 @@
+{
+  "name": "genetix",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "jquery": "^3.5.0"
+  }
+}
