@@ -2,6 +2,7 @@ import * as MapUtils from './mapUtils.js';
 import { MapCell } from './mapCell.js';
 
 const SMOOTH_COUNT = 2;
+const BORDER = 3;
 
 let map;
 
@@ -12,7 +13,7 @@ function setup(ctx, width, height) {
     map[x] = [];
     for (let y = 0; y < height; y++) {    
       let cell = new MapCell(x, y, 0);  
-      if (x > 0 && y > 0 && x < width-1 && y < height-1) {
+      if (x >= BORDER && y >= BORDER && x < width-BORDER && y < height-BORDER) {
         cell.setValue(random(0, 10));
       }
 
@@ -26,8 +27,8 @@ function setup(ctx, width, height) {
 function smooth() {
   let tempMap = JSON.parse(JSON.stringify(map));
 
-  for (let x = 1; x < map.length - 1; x++) {
-    for (let y = 1; y < map[x].length - 1; y++) {
+  for (let x = BORDER; x < map.length - BORDER; x++) {
+    for (let y = BORDER; y < map[x].length - BORDER; y++) {
       let total = tempMap[x-1][y-1].value +
         tempMap[x][y-1].value +
         tempMap[x+1][y-1].value +
@@ -38,7 +39,7 @@ function smooth() {
         tempMap[x][y+1].value +
         tempMap[x+1][y+1].value;
 
-      map[x][y] = Math.round(total / 9);
+      map[x][y].setValue(Math.round(total / 9));
     }
   }
 
@@ -46,7 +47,6 @@ function smooth() {
 }
 
 function draw(context) {
-  console.log('Draw');
   for (let x = 0; x < map.length; x++) {
     for (let y = 0; y < map[x].length; y++) {
       let coords = MapUtils.hexToPixel(map[x][y]);
@@ -56,7 +56,6 @@ function draw(context) {
 }
 
 function drawHex(context, x, y, size, fill, colour) {
-  console.log('Draw Hex', x, y, size, colour);
   let fill = fill || false;
 
   context.fillStyle = colour;

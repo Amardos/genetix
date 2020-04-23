@@ -40,7 +40,7 @@ function getHexColour(value) {
 
 class MapCell {
   constructor(x, y, value) {
-    let hex = MapUtils.offsetToAxial(x, y);
+    let hex = MapUtils.offsetToAxial({col: x, row: y});
     this.q = hex.q;
     this.r = hex.r;
     this.setValue(value);

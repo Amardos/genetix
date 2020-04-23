@@ -5,12 +5,13 @@ document.getElementById('btnUpdate').addEventListener('click', function() { game
 
 import * as Map from './modules/map.js';
 import { Organism } from './modules/organism.js';
-
-const GAME_WIDTH = 900;
-const GAME_HEIGHT = 1150;
+import * as MapUtils from './modules/mapUtils.js';
 
 const TILES_X = 30;
 const TILES_Y = 45;
+
+const GAME_WIDTH = (TILES_X-0.5) * MapUtils.HEX_WIDTH;
+const GAME_HEIGHT = (TILES_Y-1) * MapUtils.HEX_HEIGHT * 0.75;
 
 let canvas;
 let context;
