@@ -1,21 +1,9 @@
-import { getCoords } from './mapUtils.js';
+import * as MapUtils from './utilities/mapUtils.js';
+import { easeInOutQuad, degToRad } from './utilities/2dUtils.js';
 
 function random(min, max) {
   let num = Math.floor(Math.random() * (max - min)) + min;
   return num;
-}
-
-function degToRad(degrees) {
-  return degrees * Math.PI / 180;
-}
-
-function easeInOutQuad (t, b, c, d) {
-    if ((t /= d / 2) < 1) return c / 2 * t * t + b;
-    return -c / 2 * ((--t) * (t - 2) - 1) + b;
-}
-
-function easeLinear (t, b, c, d) {
-    return c * t / d + b;
 }
 
 class Organism {
@@ -31,15 +19,12 @@ class Organism {
     this.defence = this.genome.filter(x => x==3).length;
 
     this.size = this.speed + this.attack + this.defence;
-    this.x = random(0, worldWidth);
-    this.y = random(0, worldHeight);
 
-    this.direction = random(0, 360);
-    
-    this.minX = 1;
-    this.maxX = worldWidth - 1;
-    this.minY = 1;
-    this.maxY = worldHeight - 1;
+    let hex = MapUtils.offsetToAxial({col: Math.floor(worldWidth/2), row: Math.floor(worldHeight/2)});
+    this.q = hex.q;
+    this.r = hex.r;
+
+    this.direction = random(0, 6);
 
     this.state = {};
 
@@ -49,7 +34,7 @@ class Organism {
   draw(context) {
     let angle = this.direction;
 
-    let mapCoords = getCoords(this.x, this.y);
+    let mapCoords = MapUtils.hexToPixel(this);
 
     // Nice gaps beween the coloured blocks
     let waste = (this.waste * 36) / 3;
@@ -85,60 +70,27 @@ class Organism {
     if (this.state.moving) {
       this.ticks += delta;
 
-      this.x = easeInOutQuad(this.ticks, this.prevX, this.targetX - this.prevX, 1);
-      this.y = easeInOutQuad(this.ticks, this.prevY, this.targetY - this.prevY, 1);
+      this.q = easeInOutQuad(this.ticks, this.prevQ, this.targetQ - this.prevQ, 1);
+      this.r = easeInOutQuad(this.ticks, this.prevR, this.targetR - this.prevR, 1);
 
       if (this.ticks > 1) {
-        this.x = this.targetX;
-        this.y = this.targetY;
+        this.q = this.targetQ;
+        this.r = this.targetR;
         this.state.moving = false;
       } 
     } else {
-      let newDir = random(0, 6);
+      let newDir = random(0,3) - 1;
+      this.direction += newDir;
+      if (this.direction > 5) this.direction -= 5;
+      if (this.direction < 0) this.direction += 5;
 
-      switch(newDir) {
-        case 0:
-          // E
-          this.targetX = this.x + 1;
-          this.targetY = this.y;
-          console.log('East');
-          break;
-        case 1:
-          // SE
-          this.targetX = (this.y % 2 == 0) ? this.x : this.x + 1;
-          this.targetY = this.y + 1;
-          console.log('South-east');
-          break;
-        case 2:
-          // SW
-          this.targetX = (this.y % 2 == 0) ? this.x - 1 : this.x;
-          this.targetY = this.y + 1;
-          console.log('South-west');
-          break;
-        case 3:
-          // W
-          this.targetX = this.x - 1;
-          this.targetY = this.y;
-          console.log('West');
-          break;          
-        case 4:
-          // NW
-          this.targetX = (this.y % 2 == 0) ? this.x - 1 : this.x;
-          this.targetY = this.y - 1;
-          console.log('North-west');
-          break;
-        case 5:
-          // NE
-          this.targetX = (this.y % 2 == 0) ? this.x : this.x + 1;
-          this.targetY = this.y - 1;
-          console.log('North-east');
-          break;
-      }
+      let target = MapUtils.hexNeighbour(this, this.direction);
 
-      this.prevX = this.x;
-      this.prevY = this.y;
+      this.targetQ = target.q;
+      this.targetR = target.r;
 
-      console.log(`(${this.x},${this.y}) - (${this.prevX},${this.prevY}) - (${this.targetX},${this.targetY})`);
+      this.prevQ = this.q;
+      this.prevR = this.r;
 
       this.state.moving = true;
       this.ticks = 0;

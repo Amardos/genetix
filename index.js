@@ -1,11 +1,10 @@
-/*document.getElementById('btnSpawn').addEventListener('click', function() { spawn = true; });
-document.getElementById('btnUpdate').addEventListener('click', function() { game.update(); });*/
+//document.getElementById('btnUpdate').addEventListener('click', function() { game.update(); });
 
 "use strict";
 
 import * as Map from './modules/map.js';
 import { Organism } from './modules/organism.js';
-import * as MapUtils from './modules/mapUtils.js';
+import * as MapUtils from './modules/utilities/mapUtils.js';
 
 const TILES_X = 30;
 const TILES_Y = 45;
@@ -24,7 +23,7 @@ function init() {
   setupCanvas();
   Map.setup(context, TILES_X, TILES_Y);
 
-  //organisms.push(new Organism(TILES_X, TILES_Y));
+  organisms.push(new Organism(TILES_X, TILES_Y));
 
   lastRender = 0;
 
@@ -50,7 +49,7 @@ function gameLoop(timestamp) {
   }
 
   // Loop
-  //window.requestAnimationFrame(gameLoop);
+  window.requestAnimationFrame(gameLoop);
 }
 
 function setupCanvas() {
@@ -70,3 +69,5 @@ function random(min, max) {
 }
 
 init();
+
+document.getElementById('btnSpawn').addEventListener('click', function() { organisms.push(new Organism(TILES_X, TILES_Y)); });
