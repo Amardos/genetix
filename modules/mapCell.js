@@ -1,4 +1,4 @@
-import * as MapUtils from './mapUtils.js';
+import * as MapUtils from './utilities/mapUtils.js';
 
 function getHexColour(value) {
   switch(value) {

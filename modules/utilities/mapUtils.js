@@ -64,7 +64,30 @@ function axialToOffset(hex) {
   return cubeToOffset(axialToCube(hex));
 }
 
-export { getCoords, getHexPoint, hexToPixel, cubeToOffset, offsetToCube, cubeToAxial, axialToCube, offsetToAxial, axialToOffset, TILE_SIZE, HEX_HEIGHT, HEX_WIDTH };
+let axialDirections = [
+  {q: 1, r: 0}, {q: 1, r: -1}, {q: 0, r: -1},
+  {q: -1, r: 0}, {q: -1, r: 1}, {q: 0, r: 1}
+];
+
+function hexNeighbour(hex, direction) {
+  let dir = axialDirections[direction];
+  return new Hex(hex.q + dir.q, hex.r + dir.r);
+}
+
+export { 
+  getCoords, 
+  getHexPoint, 
+  hexToPixel, 
+  cubeToOffset, 
+  offsetToCube, 
+  cubeToAxial, 
+  axialToCube, 
+  offsetToAxial, 
+  axialToOffset, 
+  hexNeighbour, 
+  TILE_SIZE, 
+  HEX_HEIGHT, 
+  HEX_WIDTH };
 
 class Cube {
   constructor(x, y, z) {
